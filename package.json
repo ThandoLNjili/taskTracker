@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/ThandoLNjili/taskTracker/issues"
   },
-  "homepage": "https://github.com/ThandoLNjili/taskTracker#readme"
+  "homepage": "https://github.com/ThandoLNjili/taskTracker#readme",
+  "bin": {
+    "task-cli": "./index.js"
+  }
 }
