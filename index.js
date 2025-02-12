@@ -76,6 +76,21 @@ async function updateTaskStatus(id, cmd, tasks) {
     }
 }
 
+function listTasks(tasks) {
+    try {
+        if (tasks.length === 0) {
+            console.log("No tasks available.");
+            return;
+        }
+
+        tasks.forEach(task => {
+            console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}` )
+        });
+    } catch (err) {
+        console.error("Error showing task list:", err);
+    }
+}
+
 (async () => {
     try {
 
@@ -97,6 +112,9 @@ async function updateTaskStatus(id, cmd, tasks) {
             case 'mark-in-progress':
             case 'mark-done':
                 await updateTaskStatus(args[1], args[0], tasks);
+                break;
+            case 'list':
+                listTasks(tasks);
                 break;
             default:
                 console.log(`Command "${command}" is unknown.`)
