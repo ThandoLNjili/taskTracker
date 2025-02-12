@@ -6,15 +6,22 @@
   },
   {
     "id": 3,
-    "task": "wash car"
+    "task": "wash car",
+    "status": "to-do"
   },
   {
     "id": 4,
-    "task": "send invites"
+    "task": "send invites",
+    "status": "to-do"
   },
   {
     "id": 5,
     "task": "clean room",
     "status": "in-progress"
+  },
+  {
+    "id": 6,
+    "task": "buy new tyres",
+    "status": "to-do"
   }
 ]

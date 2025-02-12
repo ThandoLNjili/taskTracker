@@ -16,7 +16,7 @@ async function ensureFileExists(path) {
 async function addTask(newTask, tasks) {
     try {
         const newId = tasks.length > 0 ? Math.max(...tasks.map(item => item.id)) + 1 : 1;
-        newTask = {id: newId, task: newTask}
+        newTask = {id: newId, task: newTask, status: 'to-do'}
         tasks.push(newTask);
         await fs.writeFile(path, JSON.stringify(tasks, null, 2));
         console.log(`Task added successfully (ID:${newId})`);
