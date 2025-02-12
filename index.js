@@ -16,7 +16,7 @@ async function ensureFileExists(path) {
 async function addTask(newTask, tasks) {
     try {
         const newId = tasks.length > 0 ? Math.max(...tasks.map(item => item.id)) + 1 : 1;
-        newTask = {id: newId, task: newTask, status: 'to-do'}
+        newTask = {id: newId, task: newTask, status: 'todo'}
         tasks.push(newTask);
         await fs.writeFile(path, JSON.stringify(tasks, null, 2));
         console.log(`Task added successfully (ID:${newId})`);
@@ -76,18 +76,39 @@ async function updateTaskStatus(id, cmd, tasks) {
     }
 }
 
-function listTasks(tasks) {
+function listTasks(tasks, status) {
     try {
         if (tasks.length === 0) {
             console.log("No tasks available.");
             return;
         }
 
-        tasks.forEach(task => {
-            console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}` )
-        });
+        switch (status) {
+            case 'done':
+                const doneTasks = tasks.filter(task => task.status == status);
+                doneTasks.forEach(task => {
+                    console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}`);
+                });
+                break;
+            case 'todo':
+                const todoTasks = tasks.filter(task => task.status == status);
+                todoTasks.forEach(task => {
+                    console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}`);
+                });
+                break;
+            case 'in-progress':
+                const inProgressTasks = tasks.filter(task => task.status == status);
+                inProgressTasks.forEach(task => {
+                    console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}`);
+                });
+                break;
+            default:
+                tasks.forEach(task => {
+                    console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}` );
+                });
+        }
     } catch (err) {
-        console.error("Error showing task list:", err);
+        console.error("Error listing tasks:", err);
     }
 }
 
@@ -114,7 +135,8 @@ function listTasks(tasks) {
                 await updateTaskStatus(args[1], args[0], tasks);
                 break;
             case 'list':
-                listTasks(tasks);
+                if (args[1]) listTasks(tasks, args[1]); 
+                else listTasks(tasks);
                 break;
             default:
                 console.log(`Command "${command}" is unknown.`)

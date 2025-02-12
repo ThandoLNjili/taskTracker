@@ -5,23 +5,28 @@
     "status": "done"
   },
   {
+    "id": 1,
+    "task": "cook", 
+    "status": "in-progress"
+  },
+  {
     "id": 3,
     "task": "wash car",
-    "status": "to-do"
+    "status": "todo"
   },
   {
     "id": 4,
     "task": "send invites",
-    "status": "to-do"
+    "status": "todo"
   },
   {
     "id": 5,
     "task": "clean room",
-    "status": "in-progress"
+    "status": "done"
   },
   {
     "id": 6,
     "task": "buy new tyres",
-    "status": "to-do"
+    "status": "todo"
   }
 ]
