@@ -26,7 +26,6 @@ async function addTask(newTask, tasks) {
 }
 
 async function updateTask(id, updatedTask, tasks) {
-    console.log(updatedTask)
     try {
         const taskIndex = tasks.findIndex(task => task.id == id);
         
@@ -43,6 +42,22 @@ async function updateTask(id, updatedTask, tasks) {
     }
 }
 
+async function deleteTask(id, tasks) {
+    try {
+        const updatedTasks = tasks.filter(task => task.id != id);
+
+        if (updatedTasks.length === tasks.length) {
+            console.log(`Task with ID ${id} not found.`);
+            return;
+        }
+
+        await fs.writeFile(path, JSON.stringify(updatedTasks, null, 2));
+        console.log(`Task with ID ${id} removed successfully!`);
+    } catch (err) {
+        console.error("Error removing task:", err);
+    }
+}
+
 (async () => {
     try {
 
@@ -54,6 +69,8 @@ async function updateTask(id, updatedTask, tasks) {
             await addTask(args[1], tasks);
         } else if (args[0].toLowerCase() == 'update') {
             await updateTask(args[1], args[2], tasks);
+        } else if (args[0].toLowerCase() == 'delete') {
+            await deleteTask(args[1], tasks);
         }
     } catch (err) {
         console.error("Error reading file:", err);
