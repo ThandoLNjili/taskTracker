@@ -16,7 +16,14 @@ async function ensureFileExists(path) {
 async function addTask(newTask, tasks) {
     try {
         const newId = tasks.length > 0 ? Math.max(...tasks.map(item => item.id)) + 1 : 1;
-        newTask = {id: newId, task: newTask, status: 'todo'}
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        newTask = {
+            id: newId, 
+            task: newTask, 
+            status: 'todo',
+            createdAt: new Date().toLocaleString("en-US", { timeZone: userTimeZone })
+        }
+
         tasks.push(newTask);
         await fs.writeFile(path, JSON.stringify(tasks, null, 2));
         console.log(`Task added successfully (ID:${newId})`);
@@ -34,7 +41,9 @@ async function updateTask(id, updatedTask, tasks) {
             return;
         }
 
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         tasks[taskIndex].task = updatedTask;
+        tasks[taskIndex].updatedAt = new Date().toLocaleString("en-US", { timeZone: userTimeZone })
         await fs.writeFile(path, JSON.stringify(tasks, null, 2));
         console.log("Task updated successfully!");    
     } catch (err) {
