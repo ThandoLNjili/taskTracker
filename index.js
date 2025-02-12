@@ -52,9 +52,27 @@ async function deleteTask(id, tasks) {
         }
 
         await fs.writeFile(path, JSON.stringify(updatedTasks, null, 2));
-        console.log(`Task with ID ${id} removed successfully!`);
+        console.log(`Task ${id} removed successfully!`);
     } catch (err) {
         console.error("Error removing task:", err);
+    }
+}
+
+async function updateTaskStatus(id, cmd, tasks) {
+    try {
+        const taskIndex = tasks.findIndex(task => task.id == id);
+
+        if (taskIndex === -1) {
+            console.log(`Task with ID ${id} not found.`);
+        }
+        
+        const status = cmd == 'mark-done'? 'done' : 'in-progress';
+        tasks[taskIndex]['status'] = status;
+        console.log(tasks);
+        await fs.writeFile(path, JSON.stringify(tasks, null, 2));;
+        console.log(`Task ${id} status updated successfully.`);
+    } catch (err) {
+        console.error("Error updating status:", err);
     }
 }
 
@@ -64,13 +82,24 @@ async function deleteTask(id, tasks) {
         await ensureFileExists(path);
         const fileData = await fs.readFile(path, 'utf8');
         const tasks = JSON.parse(fileData);
+        const command = args[0].toLowerCase();
 
-        if (args[0].toLowerCase() == 'add') {
-            await addTask(args[1], tasks);
-        } else if (args[0].toLowerCase() == 'update') {
-            await updateTask(args[1], args[2], tasks);
-        } else if (args[0].toLowerCase() == 'delete') {
-            await deleteTask(args[1], tasks);
+        switch (command) {
+            case 'add':
+                await addTask(args[1], tasks);
+                break;
+            case 'update':
+                await updateTask(args[1], args[2], tasks);
+                break;
+            case 'delete':
+                await deleteTask(args[1], tasks);
+                break;
+            case 'mark-in-progress':
+            case 'mark-done':
+                await updateTaskStatus(args[1], args[0], tasks);
+                break;
+            default:
+                console.log(`Command "${command}" is unknown.`)
         }
     } catch (err) {
         console.error("Error reading file:", err);
