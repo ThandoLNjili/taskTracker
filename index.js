@@ -77,7 +77,9 @@ async function updateTaskStatus(id, cmd, tasks) {
         }
         
         const status = cmd == 'mark-done' ? 'done' : 'in-progress';
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         tasks[taskIndex].status = status;
+        tasks[taskIndex].updatedAt = new Date().toLocaleString("en-US", { timeZone: userTimeZone });
         await fs.writeFile(path, JSON.stringify(tasks, null, 2));
         console.log(`Task ${id} status updated successfully.`);
     } catch (err) {
