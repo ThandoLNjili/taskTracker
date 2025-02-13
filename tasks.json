@@ -2,38 +2,40 @@
   {
     "id": 1,
     "task": "driving lessons",
-    "status": "done"
+    "status": "done",
+    "createdAt": "2/13/2025, 9:36:50 AM",
+    "updatedAt": "2/13/2025, 9:55:55 AM"
   },
   {
-    "id": 1,
+    "id": 2,
     "task": "cook",
-    "status": "in-progress"
+    "status": "in-progress",
+    "createdAt": "2/13/2025, 9:37:15 AM",
+    "updatedAt": "2/13/2025, 9:56:50 AM"
   },
   {
     "id": 3,
     "task": "wash car",
-    "status": "todo"
+    "status": "todo",
+    "createdAt": "2/13/2025, 9:37:25 AM"
   },
   {
     "id": 4,
     "task": "send invites",
-    "status": "todo"
-  },
-  {
-    "id": 5,
-    "task": "clean room",
-    "status": "done"
+    "status": "todo",
+    "createdAt": "2/13/2025, 9:37:35 AM"
   },
   {
     "id": 6,
     "task": "buy new tyres",
-    "status": "todo"
+    "status": "todo",
+    "createdAt": "2/13/2025, 9:37:58 AM"
   },
   {
     "id": 7,
     "task": "Watch Wednesday on Netflix",
     "status": "todo",
-    "createdAt": "2/12/2025, 8:34:11 PM",
-    "updatedAt": "2/12/2025, 8:38:11 PM"
+    "createdAt": "2/13/2025, 9:38:25 AM",
+    "updatedAt": "2/13/2025, 9:58:20 AM"
   }
 ]

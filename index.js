@@ -9,7 +9,7 @@ async function ensureFileExists(path) {
         await fs.access(path);
     } catch {
         await fs.writeFile(path, JSON.stringify([], null, 2));
-        console.log(`Created new file: ${filePath}`);
+        console.log(`Created new file: ${path}`);
     }
 }
 
@@ -22,13 +22,13 @@ async function addTask(newTask, tasks) {
             task: newTask, 
             status: 'todo',
             createdAt: new Date().toLocaleString("en-US", { timeZone: userTimeZone })
-        }
+        };
 
         tasks.push(newTask);
         await fs.writeFile(path, JSON.stringify(tasks, null, 2));
         console.log(`Task added successfully (ID:${newId})`);
     } catch (err) {
-        console.log("Error adding task:", err);
+        console.error("Error adding task:", err);
     }
 }
 
@@ -43,11 +43,11 @@ async function updateTask(id, updatedTask, tasks) {
 
         const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         tasks[taskIndex].task = updatedTask;
-        tasks[taskIndex].updatedAt = new Date().toLocaleString("en-US", { timeZone: userTimeZone })
+        tasks[taskIndex].updatedAt = new Date().toLocaleString("en-US", { timeZone: userTimeZone });
         await fs.writeFile(path, JSON.stringify(tasks, null, 2));
         console.log("Task updated successfully!");    
     } catch (err) {
-        console.log("Error updating task:", err);
+        console.error("Error updating task:", err);
     }
 }
 
@@ -73,12 +73,14 @@ async function updateTaskStatus(id, cmd, tasks) {
 
         if (taskIndex === -1) {
             console.log(`Task with ID ${id} not found.`);
+            return;
         }
         
-        const status = cmd == 'mark-done'? 'done' : 'in-progress';
-        tasks[taskIndex]['status'] = status;
-        console.log(tasks);
-        await fs.writeFile(path, JSON.stringify(tasks, null, 2));;
+        const status = cmd == 'mark-done' ? 'done' : 'in-progress';
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        tasks[taskIndex].status = status;
+        tasks[taskIndex].updatedAt = new Date().toLocaleString("en-US", { timeZone: userTimeZone });
+        await fs.writeFile(path, JSON.stringify(tasks, null, 2));
         console.log(`Task ${id} status updated successfully.`);
     } catch (err) {
         console.error("Error updating status:", err);
@@ -92,30 +94,10 @@ function listTasks(tasks, status) {
             return;
         }
 
-        switch (status) {
-            case 'done':
-                const doneTasks = tasks.filter(task => task.status == status);
-                doneTasks.forEach(task => {
-                    console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}`);
-                });
-                break;
-            case 'todo':
-                const todoTasks = tasks.filter(task => task.status == status);
-                todoTasks.forEach(task => {
-                    console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}`);
-                });
-                break;
-            case 'in-progress':
-                const inProgressTasks = tasks.filter(task => task.status == status);
-                inProgressTasks.forEach(task => {
-                    console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}`);
-                });
-                break;
-            default:
-                tasks.forEach(task => {
-                    console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}` );
-                });
-        }
+        const filteredTasks = status ? tasks.filter(task => task.status == status) : tasks;
+        filteredTasks.forEach(task => {
+            console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}`);
+        });
     } catch (err) {
         console.error("Error listing tasks:", err);
     }
@@ -123,7 +105,6 @@ function listTasks(tasks, status) {
 
 (async () => {
     try {
-
         await ensureFileExists(path);
         const fileData = await fs.readFile(path, 'utf8');
         const tasks = JSON.parse(fileData);
@@ -144,11 +125,10 @@ function listTasks(tasks, status) {
                 await updateTaskStatus(args[1], args[0], tasks);
                 break;
             case 'list':
-                if (args[1]) listTasks(tasks, args[1]); 
-                else listTasks(tasks);
+                listTasks(tasks, args[1]);
                 break;
             default:
-                console.log(`Command "${command}" is unknown.`)
+                console.log(`Command "${command}" is unknown.`);
         }
     } catch (err) {
         console.error("Error reading file:", err);
