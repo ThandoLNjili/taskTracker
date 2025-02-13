@@ -1,10 +1,39 @@
 [
   {
     "id": 1,
-    "task": "driving lessons"
+    "task": "driving lessons",
+    "status": "done"
   },
   {
-    "id": 2,
-    "task": "skating"
+    "id": 1,
+    "task": "cook",
+    "status": "in-progress"
+  },
+  {
+    "id": 3,
+    "task": "wash car",
+    "status": "todo"
+  },
+  {
+    "id": 4,
+    "task": "send invites",
+    "status": "todo"
+  },
+  {
+    "id": 5,
+    "task": "clean room",
+    "status": "done"
+  },
+  {
+    "id": 6,
+    "task": "buy new tyres",
+    "status": "todo"
+  },
+  {
+    "id": 7,
+    "task": "Watch Wednesday on Netflix",
+    "status": "todo",
+    "createdAt": "2/12/2025, 8:34:11 PM",
+    "updatedAt": "2/12/2025, 8:38:11 PM"
   }
 ]
