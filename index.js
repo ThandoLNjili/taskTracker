@@ -2,7 +2,7 @@
 
 const fs = require("fs").promises;
 const FILE_PATH = 'tasks.json';
-const USER_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const formatDate = () => new Date().toISOString().replace("T", " ").split(".")[0];
 const [command, ...args] = process.argv.slice(2);
 
 /**
@@ -24,13 +24,19 @@ async function ensureFileExists(path) {
  * @param {Array} tasks - The current list of tasks.
  */
 async function addTask(newTask, tasks) {
+    if (!newTask || newTask.trim() === '') {
+        console.log("Task description cannot be empty.");
+        showHelp();
+        return;
+    }
+
     try {
         const newId = tasks.length > 0 ? Math.max(...tasks.map(item => item.id)) + 1 : 1;
         const task = {
             id: newId,
             task: newTask,
             status: 'todo',
-            createdAt: new Date().toLocaleString("en-US", { timeZone: USER_TIME_ZONE })
+            createdAt: formatDate(),
         };
 
         tasks.push(task);
@@ -48,6 +54,12 @@ async function addTask(newTask, tasks) {
  * @param {Array} tasks - The current list of tasks.
  */
 async function updateTask(id, updatedTask, tasks) {
+    if (!id || isNaN(id) || !updatedTask || updatedTask.trim() === '') {
+        console.log("Invalid task ID or description.");
+        showHelp();
+        return;
+    }
+
     try {
         const taskIndex = tasks.findIndex(task => task.id == id);
 
@@ -57,7 +69,7 @@ async function updateTask(id, updatedTask, tasks) {
         }
 
         tasks[taskIndex].task = updatedTask;
-        tasks[taskIndex].updatedAt = new Date().toLocaleString("en-US", { timeZone: USER_TIME_ZONE });
+        tasks[taskIndex].updatedAt = formatDate();
         await fs.writeFile(FILE_PATH, JSON.stringify(tasks, null, 2));
         console.log("Task updated successfully!");
     } catch (err) {
@@ -71,6 +83,12 @@ async function updateTask(id, updatedTask, tasks) {
  * @param {Array} tasks - The current list of tasks.
  */
 async function deleteTask(id, tasks) {
+    if (!id || isNaN(id)) {
+        console.log("Invalid task ID.");
+        showHelp();
+        return;
+    }
+
     try {
         const updatedTasks = tasks.filter(task => task.id != id);
 
@@ -93,6 +111,12 @@ async function deleteTask(id, tasks) {
  * @param {Array} tasks - The current list of tasks.
  */
 async function updateTaskStatus(id, cmd, tasks) {
+    if (!id || isNaN(id)) {
+        console.log("Invalid task ID.");
+        showHelp();
+        return;
+    }
+
     try {
         const taskIndex = tasks.findIndex(task => task.id == id);
 
@@ -103,7 +127,7 @@ async function updateTaskStatus(id, cmd, tasks) {
         
         const status = cmd === 'mark-done' ? 'done' : 'in-progress';
         tasks[taskIndex].status = status;
-        tasks[taskIndex].updatedAt = new Date().toLocaleString("en-US", { timeZone: USER_TIME_ZONE });
+        tasks[taskIndex].updatedAt = formatDate();
         await fs.writeFile(FILE_PATH, JSON.stringify(tasks, null, 2));
         console.log(`Task ${id} status updated successfully.`);
     } catch (err) {
@@ -117,13 +141,19 @@ async function updateTaskStatus(id, cmd, tasks) {
  * @param {string} [status] - The status to filter tasks by.
  */
 function listTasks(tasks, status) {
+    if (status && !['todo', 'in-progress', 'done'].includes(status.toLowerCase())) {
+        console.log("Invalid status. Must be one of: todo, in-progress, done");
+        showHelp();
+        return;
+    }
+
     try {
         if (tasks.length === 0) {
             console.log("No tasks available.");
             return;
         }
 
-        const filteredTasks = status ? tasks.filter(task => task.status === status) : tasks;
+        const filteredTasks = status ? tasks.filter(task => task.status.toLowerCase() === status.toLowerCase()) : tasks;
         filteredTasks.forEach(task => {
             console.log(`ID: ${task.id}, Task: ${task.task}, Status: ${task.status}`);
         });
@@ -141,13 +171,35 @@ function handleError(action, err) {
     console.error(`Error ${action}:`, err);
 }
 
+function showHelp() {
+    console.log(`Usage:
+      add "<task>"          - Add a new task
+      update <id> "<task>"  - Update task description
+      delete <id>           - Remove a task
+      mark-in-progress <id> - Mark a task as in progress
+      mark-done <id>        - Mark a task as done
+      list [status]         - List all tasks (or filter by status)
+      help                  - Show usage instructions
+
+    Example:
+      node index.js add "Buy groceries"
+      node index.js update 1 "Read a book"
+      node index.js delete 2
+      node index.js mark-done 3
+      node index.js list done
+      node index.js list
+      node index.js list in-progress
+      node index.js help
+    `);
+}
+
 (async () => {
     try {
         await ensureFileExists(FILE_PATH);
         const fileData = await fs.readFile(FILE_PATH, 'utf8');
         const tasks = JSON.parse(fileData);
 
-        switch (command) {
+        switch (command.toLowerCase()) {
             case 'add':
                 await addTask(args[0], tasks);
                 break;
@@ -163,6 +215,9 @@ function handleError(action, err) {
                 break;
             case 'list':
                 listTasks(tasks, args[0]);
+                break;
+            case 'help':
+                showHelp();
                 break;
             default:
                 console.log(`Command "${command}" is unknown.`);
