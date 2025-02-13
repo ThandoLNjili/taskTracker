@@ -10,6 +10,17 @@ Task Tracker is a simple command-line application for managing tasks. You can ad
 - Mark a task as in-progress or done
 - List tasks by status or all tasks
 
+## Installation
+
+1. Clone the repository:
+    ```sh
+    https://github.com/ThandoLNjili/taskTracker
+    ```
+2. Navigate to the project directory:
+    ```sh
+    cd taskTracker
+    ```
+
 ## Usage
 
 Run the application using the following command:
